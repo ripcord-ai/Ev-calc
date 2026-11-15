@@ -126,6 +126,10 @@ const $=id=>document.getElementById(id);
   cx.closePath();cx.fill();
   $('appIcon').href=cv.toDataURL('image/png');
 })();
+if('serviceWorker' in navigator){
+  const sw=`const C='ev-v1';self.addEventListener('install',e=>{e.waitUntil(caches.open(C).then(c=>c.addAll([self.location.href.split('#')[0]])));self.skipWaiting()});self.addEventListener('fetch',e=>{e.respondWith(caches.match(e.request).then(r=>r||fetch(e.request).then(res=>{let cl=res.clone();caches.open(C).then(c=>c.put(e.request,cl));return res})))});`;
+  navigator.serviceWorker.register('data:application/javascript;base64,'+btoa(sw)).catch(()=>{});
+}
 let baseSec=0,endTs=0,iv=null,run=0;
 function calc(){
   if(run)stop();
