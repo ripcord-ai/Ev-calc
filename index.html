@@ -1,0 +1,167 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="EV Calc">
+<title>EV Calc</title>
+<style>
+*{box-sizing:border-box;margin:0;padding:0;font-family:-apple-system,BlinkMacSystemFont,"SF Pro Display",sans-serif;-webkit-tap-highlight-color:transparent}
+body{background:#111317;color:#f3f4f6;display:flex;justify-content:center;min-height:100vh;padding:env(safe-area-inset-top,16px) 16px env(safe-area-inset-bottom,16px)}
+.app{width:100%;max-width:420px;display:flex;flex-direction:column;gap:14px}
+header{display:flex;justify-content:space-between;align-items:center;padding:4px 4px 2px}
+h1{font-size:24px;font-weight:700;letter-spacing:-0.3px}
+.st{display:flex;align-items:center;gap:6px;font-size:13px;font-weight:500;color:#d1d5db}
+.dot{width:8px;height:8px;border-radius:50%;background:#34d399;transition:background .2s}
+.dot.run{background:#f59e0b;box-shadow:0 0 8px rgba(245,158,11,.7);animation:pulse 1.5s infinite ease-in-out}
+@keyframes pulse{0%,100%{opacity:1;transform:scale(1)}50%{opacity:.35;transform:scale(.85)}}
+.card{background:#1c1f24;border-radius:16px;padding:16px 18px;border:1px solid rgba(255,255,255,.04);display:flex;flex-direction:column;gap:12px}
+.top-card{flex-direction:row;align-items:center;justify-content:space-between;padding:18px 20px}
+.tmr{font-size:42px;font-weight:500;color:#34d399;letter-spacing:-1px;font-variant-numeric:tabular-nums;line-height:1}
+.meta{display:flex;flex-direction:column;gap:4px;text-align:right}
+.sub{font-size:13px;color:#8b929e}
+.wht{font-size:14px;color:#e5e7eb;font-weight:500}
+.row{display:flex;justify-content:space-between;align-items:baseline}
+.val{font-size:20px;font-weight:600;color:#fff}
+.pct{font-size:14px;color:#8b929e;margin-left:2px}
+input[type=range]{-webkit-appearance:none;appearance:none;width:100%;background:transparent;cursor:pointer}
+input[type=range]::-webkit-slider-runnable-track{height:4px;background:#32363f;border-radius:2px}
+input[type=range]::-moz-range-track{height:4px;background:#32363f;border-radius:2px}
+input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;height:24px;width:24px;border-radius:50%;background:#fff;margin-top:-10px;box-shadow:0 2px 6px rgba(0,0,0,.5)}
+input[type=range]::-moz-range-thumb{height:24px;width:24px;border-radius:50%;background:#fff;border:none;box-shadow:0 2px 6px rgba(0,0,0,.5)}
+.dual{position:relative;height:28px;display:flex;align-items:center}
+.trk,.rng{position:absolute;height:4px;border-radius:2px}
+.trk{width:100%;background:#32363f;z-index:1}
+.rng{background:#fff;z-index:2}
+.dual input{position:absolute;pointer-events:none;z-index:3}
+.dual input::-webkit-slider-runnable-track{background:transparent;pointer-events:none}
+.dual input::-moz-range-track{background:transparent;pointer-events:none}
+.dual input::-webkit-slider-thumb{pointer-events:auto;position:relative;z-index:4}
+.dual input::-moz-range-thumb{pointer-events:auto;position:relative;z-index:4}
+.pbox{background:#14161a;border-radius:12px;padding:12px 16px;display:flex;justify-content:space-between;align-items:center;border:1px solid #282c34}
+.pbox input{background:transparent;border:none;color:#fff;font-size:20px;font-weight:600;width:70%;outline:none}
+.prs{display:grid;grid-template-columns:repeat(3,1fr);gap:8px}
+.prs button{background:#252930;border:none;color:#d1d5db;padding:10px 6px;border-radius:10px;font-size:13px;font-weight:500;cursor:pointer}
+.prs button:active{background:#e2e8f0;color:#111317}
+.rst{background:#252930;border:none;color:#9ca3af;width:26px;height:26px;border-radius:50%;cursor:pointer;font-size:13px;margin-left:6px}
+.acts{margin-top:auto;padding-top:4px;display:flex;flex-direction:column;gap:10px}
+.btn-main{background:#e2e8f0;border:none;color:#111317;padding:16px;border-radius:14px;font-size:16px;font-weight:600;cursor:pointer}
+.btn-main.run{background:#ef4444;color:#fff}
+.btn-sec{background:#252930;border:none;color:#9ca3af;padding:16px;border-radius:14px;font-size:15px;font-weight:500;cursor:pointer}
+.btn-sec:active{color:#fff}
+</style>
+</head>
+<body>
+<div class="app">
+  <header>
+    <h1>EV Calc</h1>
+    <div class="st"><span class="dot" id="stDot"></span><span id="stTxt">Расчёт заряда</span></div>
+  </header>
+
+  <div class="card top-card">
+    <div>
+      <div class="tmr" id="td">09:25</div>
+      <div class="sub" style="margin-top:4px" id="secTxt">42 сек <button class="rst" onclick="rt()">↻</button></div>
+    </div>
+    <div class="meta">
+      <div class="sub" id="fin">готово в --:--</div>
+      <div class="wht" id="en">залить 13.2 кВт·ч</div>
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="row">
+      <span class="sub">Ёмкость батареи</span>
+      <span class="val"><span id="bv">40</span><span class="pct"> кВт·ч</span></span>
+    </div>
+    <input type="range" id="bs" min="10" max="150" value="40">
+  </div>
+
+  <div class="card">
+    <div class="row">
+      <div><div class="sub">Текущий заряд</div><div class="val"><span id="sv">62</span><span class="pct">%</span></div></div>
+      <div style="text-align:right"><div class="sub">Зарядить до</div><div class="val"><span id="ev">95</span><span class="pct">%</span></div></div>
+    </div>
+    <div class="dual">
+      <div class="trk"></div><div class="rng" id="rng"></div>
+      <input type="range" id="ss" min="0" max="100" value="62">
+      <input type="range" id="es" min="0" max="100" value="95">
+    </div>
+  </div>
+
+  <div class="card">
+    <span class="sub">Мощность зарядки</span>
+    <div class="pbox"><input type="number" id="pi" value="1.4" step="0.1" inputmode="decimal"><span class="sub">кВт</span></div>
+    <div class="prs">
+      <button onclick="sp(1.1)">1.1 кВт</button><button onclick="sp(1.4)">1.4 кВт</button><button onclick="sp(1.8)">1.8 кВт</button>
+      <button onclick="sp(2.4)">2.4 кВт</button><button onclick="sp(3.0)">3.0 кВт</button><button onclick="sp(3.5)">3.5 кВт</button>
+    </div>
+  </div>
+
+  <div class="acts">
+    <button class="btn-main" id="tb" onclick="tt()">Запустить таймер</button>
+    <button class="btn-sec" onclick="cal()">Напоминание в Календарь</button>
+  </div>
+</div>
+<script>
+const $=id=>document.getElementById(id);
+let baseSec=0,endTs=0,iv=null,run=0;
+function calc(){
+  if(run)stop();
+  let c=+$('bs').value,s=+$('ss').value,e=+$('es').value,p=+$('pi').value||0;
+  if(s>e){s=e;$('ss').value=s}
+  $('bv').textContent=c;$('sv').textContent=s;$('ev').textContent=e;
+  $('rng').style.left=s+'%';$('rng').style.width=(e-s)+'%';
+  let k=c*((e-s)/100);
+  $('en').textContent='залить '+k.toFixed(1)+' кВт·ч';
+  if(p>0&&k>0){
+    baseSec=Math.round((k/p)*3600);draw(baseSec);
+    let d=new Date(Date.now()+baseSec*1000);
+    $('fin').textContent='готово в '+String(d.getHours()).padStart(2,'0')+':'+String(d.getMinutes()).padStart(2,'0');
+  }else{baseSec=0;draw(0);$('fin').textContent='зарядка не нужна'}
+  localStorage.setItem('ev',JSON.stringify({c,s,e,p}));
+}
+function draw(t){
+  let h=Math.floor(t/3600),m=Math.floor(t%3600/60),s=t%60;
+  $('td').textContent=(h<10?'0'+h:h)+':'+(m<10?'0'+m:m);
+  $('secTxt').firstChild.textContent=(s<10?'0'+s:s)+' сек ';
+}
+function sp(v){$('pi').value=v;calc()}
+function tick(){
+  let rem=Math.max(0,Math.round((endTs-Date.now())/1000));
+  draw(rem);
+  if(rem<=0){stop();alert('Зарядка завершена!')}
+}
+function tt(){
+  if(run)return stop();
+  if(baseSec<=0)return;
+  run=1;endTs=Date.now()+baseSec*1000;
+  $('tb').textContent='Остановить таймер';$('tb').classList.add('run');
+  $('stTxt').textContent='Таймер запущен';$('stDot').classList.add('run');
+  iv=setInterval(tick,1000);
+}
+function stop(){
+  run=0;clearInterval(iv);
+  $('tb').textContent='Запустить таймер';$('tb').classList.remove('run');
+  $('stTxt').textContent='Расчёт заряда';$('stDot').classList.remove('run');
+}
+function rt(){stop();calc()}
+function cal(){
+  let t=run?endTs:(baseSec>0?Date.now()+baseSec*1000:0);
+  if(!t)return;
+  let fmtD=d=>d.toISOString().replace(/[-:]/g,'').split('.')+'Z';
+  let s=new Date(t),e=new Date(t+900000);
+  let ics=['BEGIN:VCALENDAR','VERSION:2.0','BEGIN:VEVENT','DTSTART:'+fmtD(s),'DTEND:'+fmtD(e),'SUMMARY:Автомобиль заряжен до '+$('ev').textContent+'%','BEGIN:VALARM','TRIGGER:-PT0M','ACTION:DISPLAY','DESCRIPTION:Отключите зарядку','END:VALARM','END:VEVENT','END:VCALENDAR'].join('\r\n');
+  let a=document.createElement('a');
+  a.href=URL.createObjectURL(new Blob([ics],{type:'text/calendar;charset=utf-8'}));
+  a.download='ev-charge.ics';a.click();
+}
+['bs','ss','es','pi'].forEach(id=>$(id).addEventListener('input',calc));
+let saved=JSON.parse(localStorage.getItem('ev')||'null');
+if(saved){$('bs').value=saved.c;$('ss').value=saved.s;$('es').value=saved.e;$('pi').value=saved.p}
+calc();
+</script>
+</body>
+</html>
