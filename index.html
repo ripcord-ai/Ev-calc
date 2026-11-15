@@ -151,12 +151,10 @@ function rt(){stop();calc()}
 function cal(){
   let t=run?endTs:(baseSec>0?Date.now()+baseSec*1000:0);
   if(!t)return;
-  let fmtD=d=>d.toISOString().replace(/[-:]/g,'').split('.')+'Z';
+  let fmtD=d=>d.toISOString().replace(/[-:]/g,'').slice(0,15)+'Z';
   let s=new Date(t),e=new Date(t+900000);
   let ics=['BEGIN:VCALENDAR','VERSION:2.0','BEGIN:VEVENT','DTSTART:'+fmtD(s),'DTEND:'+fmtD(e),'SUMMARY:Автомобиль заряжен до '+$('ev').textContent+'%','BEGIN:VALARM','TRIGGER:-PT0M','ACTION:DISPLAY','DESCRIPTION:Отключите зарядку','END:VALARM','END:VEVENT','END:VCALENDAR'].join('\r\n');
-  let a=document.createElement('a');
-  a.href=URL.createObjectURL(new Blob([ics],{type:'text/calendar;charset=utf-8'}));
-  a.download='ev-charge.ics';a.click();
+  window.location.href='data:text/calendar;charset=utf-8,'+encodeURIComponent(ics);
 }
 ['bs','ss','es','pi'].forEach(id=>$(id).addEventListener('input',calc));
 let saved=JSON.parse(localStorage.getItem('ev')||'null');
