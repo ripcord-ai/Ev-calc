@@ -46,11 +46,9 @@ input[type=range]::-moz-range-thumb{height:24px;width:24px;border-radius:50%;bac
 .prs button{background:#252930;border:none;color:#d1d5db;padding:10px 6px;border-radius:10px;font-size:13px;font-weight:500;cursor:pointer}
 .prs button:active{background:#e2e8f0;color:#111317}
 .rst{background:#252930;border:none;color:#9ca3af;width:26px;height:26px;border-radius:50%;cursor:pointer;font-size:13px;margin-left:6px}
-.acts{margin-top:auto;padding-top:4px;display:flex;flex-direction:column;gap:10px}
+.acts{margin-top:auto;padding-top:4px;display:flex;flex-direction:column}
 .btn-main{background:#e2e8f0;border:none;color:#111317;padding:16px;border-radius:14px;font-size:16px;font-weight:600;cursor:pointer}
 .btn-main.run{background:#ef4444;color:#fff}
-.btn-sec{background:#252930;border:none;color:#9ca3af;padding:16px;border-radius:14px;font-size:15px;font-weight:500;cursor:pointer}
-.btn-sec:active{color:#fff}
 </style>
 </head>
 <body>
@@ -102,7 +100,6 @@ input[type=range]::-moz-range-thumb{height:24px;width:24px;border-radius:50%;bac
 
   <div class="acts">
     <button class="btn-main" id="tb" onclick="tt()">Запустить таймер</button>
-    <button class="btn-sec" onclick="cal()">Напоминание в Календарь</button>
   </div>
 </div>
 <script>
@@ -148,14 +145,6 @@ function stop(){
   $('stTxt').textContent='Расчёт заряда';$('stDot').classList.remove('run');
 }
 function rt(){stop();calc()}
-function cal(){
-  let t=run?endTs:(baseSec>0?Date.now()+baseSec*1000:0);
-  if(!t)return;
-  let fmtD=d=>d.toISOString().replace(/[-:]/g,'').slice(0,15)+'Z';
-  let s=new Date(t),e=new Date(t+900000);
-  let ics=['BEGIN:VCALENDAR','VERSION:2.0','BEGIN:VEVENT','DTSTART:'+fmtD(s),'DTEND:'+fmtD(e),'SUMMARY:Автомобиль заряжен до '+$('ev').textContent+'%','BEGIN:VALARM','TRIGGER:-PT0M','ACTION:DISPLAY','DESCRIPTION:Отключите зарядку','END:VALARM','END:VEVENT','END:VCALENDAR'].join('\r\n');
-  window.location.href='data:text/calendar;charset=utf-8,'+encodeURIComponent(ics);
-}
 ['bs','ss','es','pi'].forEach(id=>$(id).addEventListener('input',calc));
 let saved=JSON.parse(localStorage.getItem('ev')||'null');
 if(saved){$('bs').value=saved.c;$('ss').value=saved.s;$('es').value=saved.e;$('pi').value=saved.p}
