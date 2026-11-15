@@ -24,6 +24,7 @@ h1{font-size:24px;font-weight:700;letter-spacing:-0.3px}
 .meta{display:flex;flex-direction:column;gap:4px;text-align:right}
 .sub{font-size:13px;color:#8b929e}
 .wht{font-size:14px;color:#e5e7eb;font-weight:500}
+.cost{font-size:13px;color:#34d399;font-weight:500}
 .row{display:flex;justify-content:space-between;align-items:baseline}
 .val{font-size:20px;font-weight:600;color:#fff}
 .pct{font-size:14px;color:#8b929e;margin-left:2px}
@@ -41,8 +42,9 @@ input[type=range]::-moz-range-thumb{height:24px;width:24px;border-radius:50%;bac
 .dual input::-moz-range-track{background:transparent;pointer-events:none}
 .dual input::-webkit-slider-thumb{pointer-events:auto;position:relative;z-index:4}
 .dual input::-moz-range-thumb{pointer-events:auto;position:relative;z-index:4}
-.pbox{background:#14161a;border-radius:12px;padding:12px 16px;display:flex;justify-content:space-between;align-items:center;border:1px solid #282c34}
-.pbox input{background:transparent;border:none;color:#fff;font-size:20px;font-weight:600;width:70%;outline:none}
+.inputs-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.pbox{background:#14161a;border-radius:12px;padding:11px 14px;display:flex;justify-content:space-between;align-items:center;border:1px solid #282c34}
+.pbox input{background:transparent;border:none;color:#fff;font-size:19px;font-weight:600;width:65%;outline:none}
 .prs{display:grid;grid-template-columns:repeat(3,1fr);gap:8px}
 .prs button{background:#252930;border:none;color:#d1d5db;padding:10px 6px;border-radius:10px;font-size:13px;font-weight:500;cursor:pointer}
 .prs button:active{background:#e2e8f0;color:#111317}
@@ -67,6 +69,7 @@ input[type=range]::-moz-range-thumb{height:24px;width:24px;border-radius:50%;bac
     <div class="meta">
       <div class="sub" id="fin">готово в --:--</div>
       <div class="wht" id="en">залить 13.2 кВт·ч</div>
+      <div class="cost" id="cst">≈ 73 ₽</div>
     </div>
   </div>
 
@@ -91,8 +94,16 @@ input[type=range]::-moz-range-thumb{height:24px;width:24px;border-radius:50%;bac
   </div>
 
   <div class="card">
-    <span class="sub">Мощность зарядки</span>
-    <div class="pbox"><input type="number" id="pi" value="1.4" step="0.1" inputmode="decimal"><span class="sub">кВт</span></div>
+    <div class="inputs-grid">
+      <div>
+        <div class="sub" style="margin-bottom:6px">Мощность</div>
+        <div class="pbox"><input type="number" id="pi" value="1.4" step="0.1" inputmode="decimal"><span class="sub">кВт</span></div>
+      </div>
+      <div>
+        <div class="sub" style="margin-bottom:6px">Тариф</div>
+        <div class="pbox"><input type="number" id="ti" value="5.5" step="0.1" inputmode="decimal"><span class="sub">₽</span></div>
+      </div>
+    </div>
     <div class="prs">
       <button onclick="sp(1.1)">1.1 кВт</button><button onclick="sp(1.4)">1.4 кВт</button><button onclick="sp(1.8)">1.8 кВт</button>
       <button onclick="sp(2.4)">2.4 кВт</button><button onclick="sp(3.0)">3.0 кВт</button><button onclick="sp(3.5)">3.5 кВт</button>
@@ -118,18 +129,19 @@ const $=id=>document.getElementById(id);
 let baseSec=0,endTs=0,iv=null,run=0;
 function calc(){
   if(run)stop();
-  let c=+$('bs').value,s=+$('ss').value,e=+$('es').value,p=+$('pi').value||0;
+  let c=+$('bs').value,s=+$('ss').value,e=+$('es').value,p=+$('pi').value||0,tr=+$('ti').value||0;
   if(s>e){s=e;$('ss').value=s}
   $('bv').textContent=c;$('sv').textContent=s;$('ev').textContent=e;
   $('rng').style.left=s+'%';$('rng').style.width=(e-s)+'%';
   let k=c*((e-s)/100);
   $('en').textContent='залить '+k.toFixed(1)+' кВт·ч';
+  $('cst').textContent=(tr>0&&k>0)?('≈ '+Math.round(k*tr)+' ₽'):'';
   if(p>0&&k>0){
     baseSec=Math.round((k/p)*3600);draw(baseSec);
     let d=new Date(Date.now()+baseSec*1000);
     $('fin').textContent='готово в '+String(d.getHours()).padStart(2,'0')+':'+String(d.getMinutes()).padStart(2,'0');
   }else{baseSec=0;draw(0);$('fin').textContent='зарядка не нужна'}
-  localStorage.setItem('ev',JSON.stringify({c,s,e,p}));
+  localStorage.setItem('ev',JSON.stringify({c,s,e,p,tr}));
 }
 function draw(t){
   let h=Math.floor(t/3600),m=Math.floor(t%3600/60),s=t%60;
@@ -156,9 +168,9 @@ function stop(){
   $('stTxt').textContent='Расчёт заряда';$('stDot').classList.remove('run');
 }
 function rt(){stop();calc()}
-['bs','ss','es','pi'].forEach(id=>$(id).addEventListener('input',calc));
+['bs','ss','es','pi','ti'].forEach(id=>$(id).addEventListener('input',calc));
 let saved=JSON.parse(localStorage.getItem('ev')||'null');
-if(saved){$('bs').value=saved.c;$('ss').value=saved.s;$('es').value=saved.e;$('pi').value=saved.p}
+if(saved){$('bs').value=saved.c;$('ss').value=saved.s;$('es').value=saved.e;$('pi').value=saved.p;if(saved.tr!==undefined)$('ti').value=saved.tr}
 calc();
 </script>
 </body>
