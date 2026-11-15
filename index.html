@@ -6,6 +6,7 @@
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 <meta name="apple-mobile-web-app-title" content="EV Calc">
+<link rel="apple-touch-icon" id="appIcon" href="">
 <title>EV Calc</title>
 <style>
 *{box-sizing:border-box;margin:0;padding:0;font-family:-apple-system,BlinkMacSystemFont,"SF Pro Display",sans-serif;-webkit-tap-highlight-color:transparent}
@@ -104,6 +105,16 @@ input[type=range]::-moz-range-thumb{height:24px;width:24px;border-radius:50%;bac
 </div>
 <script>
 const $=id=>document.getElementById(id);
+(function makeIcon(){
+  let cv=document.createElement('canvas');cv.width=cv.height=180;
+  let cx=cv.getContext('2d');
+  cx.fillStyle='#1c1f24';cx.fillRect(0,0,180,180);
+  cx.strokeStyle='#34d399';cx.lineWidth=6;cx.beginPath();cx.arc(90,90,62,0,Math.PI*2);cx.stroke();
+  cx.fillStyle='#34d399';cx.beginPath();
+  cx.moveTo(98,46);cx.lineTo(64,96);cx.lineTo(88,96);cx.lineTo(82,134);cx.lineTo(116,84);cx.lineTo(92,84);
+  cx.closePath();cx.fill();
+  $('appIcon').href=cv.toDataURL('image/png');
+})();
 let baseSec=0,endTs=0,iv=null,run=0;
 function calc(){
   if(run)stop();
