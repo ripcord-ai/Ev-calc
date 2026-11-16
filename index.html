@@ -119,13 +119,14 @@ function openWhl(mode){
   if(mode==='p'){
     $('wTtl').textContent='Мощность зарядки';$('wUnit').textContent='кВт';
     buildCol(c1,22,false);buildCol(c2,9,false);
-    var i1=Math.floor(curP),i2=Math.round((curP-i1)*10);setScroll(c1,i1);setScroll(c2,i2);
+    var i1=Math.floor(curP),i2=Math.round((curP-i1)*10);
+    $('ovl').classList.add('open');setScroll(c1,i1);setScroll(c2,i2);
   }else{
     $('wTtl').textContent='Тариф за кВт·ч';$('wUnit').textContent='₽';
     buildCol(c1,20,false);buildCol(c2,99,true);
-    var i1=Math.floor(curT),i2=Math.round((curT-i1)*100);setScroll(c1,i1);setScroll(c2,i2);
+    var i1=Math.floor(curT),i2=Math.round((curT-i1)*100);
+    $('ovl').classList.add('open');setScroll(c1,i1);setScroll(c2,i2);
   }
-  $('ovl').classList.add('open');
 }
 function setScroll(col,idx){col.scrollTop=idx*36;tiltCol(col)}
 function tiltCol(col){
@@ -137,7 +138,7 @@ function tiltCol(col){
       items[i].style.transform='rotateX('+ang+'deg) scale('+sc+')';
       items[i].style.opacity=op;
     }else{items[i].style.opacity=0.15}
-    items[i].classList.toggle('act',i===idx);
+    items[i].classList.toggle('act',i===act);
   }
 }
 function onWhlScroll(col){
