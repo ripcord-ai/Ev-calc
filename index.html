@@ -15,16 +15,14 @@ body{background:#111317;color:#f3f4f6;display:flex;justify-content:center;min-he
 header{display:flex;justify-content:space-between;align-items:center;padding:4px 4px 2px}
 h1{font-size:24px;font-weight:700;letter-spacing:-0.3px}
 .st{display:flex;align-items:center;gap:6px;font-size:13px;font-weight:500;color:#d1d5db}
-.dot{width:8px;height:8px;border-radius:50%;background:#34d399;transition:background .2s}
-.dot.run{background:#f59e0b;box-shadow:0 0 8px rgba(245,158,11,.7);animation:pulse 1.5s infinite ease-in-out}
-@keyframes pulse{0%,100%{opacity:1;transform:scale(1)}50%{opacity:.35;transform:scale(.85)}}
+.dot{width:8px;height:8px;border-radius:50%;background:#34d399}
 .card{background:#1c1f24;border-radius:16px;padding:16px 18px;border:1px solid rgba(255,255,255,.04);display:flex;flex-direction:column;gap:12px}
-.top-card{flex-direction:row;align-items:center;justify-content:space-between;padding:18px 20px}
-.tmr{font-size:42px;font-weight:500;color:#34d399;letter-spacing:-1px;font-variant-numeric:tabular-nums;line-height:1}
-.meta{display:flex;flex-direction:column;gap:4px;text-align:right}
+.top-card{flex-direction:row;align-items:center;justify-content:space-between;padding:20px}
+.tmr{font-size:48px;font-weight:500;color:#34d399;letter-spacing:-1px;font-variant-numeric:tabular-nums;line-height:1}
+.meta{display:flex;flex-direction:column;gap:5px;text-align:right;white-space:nowrap}
 .sub{font-size:13px;color:#8b929e}
-.wht{font-size:14px;color:#e5e7eb;font-weight:500}
-.cost{font-size:13px;color:#34d399;font-weight:500}
+.wht{font-size:15px;color:#e5e7eb;font-weight:500}
+.cost{font-size:14px;color:#34d399;font-weight:500}
 .row{display:flex;justify-content:space-between;align-items:baseline}
 .val{font-size:20px;font-weight:600;color:#fff}
 .pct{font-size:14px;color:#8b929e;margin-left:2px}
@@ -48,47 +46,43 @@ input[type=range]::-moz-range-thumb{height:24px;width:24px;border-radius:50%;bac
 .prs{display:grid;grid-template-columns:repeat(3,1fr);gap:8px}
 .prs button{background:#252930;border:none;color:#d1d5db;padding:10px 6px;border-radius:10px;font-size:13px;font-weight:500;cursor:pointer}
 .prs button:active{background:#e2e8f0;color:#111317}
-.rst{background:#252930;border:none;color:#9ca3af;width:26px;height:26px;border-radius:50%;cursor:pointer;font-size:13px;margin-left:6px}
-.acts{margin-top:auto;padding-top:4px;display:flex;flex-direction:column}
-.btn-main{background:#e2e8f0;border:none;color:#111317;padding:16px;border-radius:14px;font-size:16px;font-weight:600;cursor:pointer}
-.btn-main.run{background:#ef4444;color:#fff}
 </style>
 </head>
 <body>
 <div class="app">
   <header>
     <h1>EV Calc</h1>
-    <div class="st"><span class="dot" id="stDot"></span><span id="stTxt">Расчёт заряда</span></div>
+    <div class="st"><span class="dot"></span><span>Расчёт заряда</span></div>
   </header>
 
   <div class="card top-card">
     <div>
-      <div class="tmr" id="td">09:25</div>
-      <div class="sub" style="margin-top:4px" id="secTxt">42 сек <button class="rst" onclick="rt()">↻</button></div>
+      <div class="tmr" id="td">11:00</div>
+      <div class="sub" style="margin-top:6px">время заряда</div>
     </div>
     <div class="meta">
-      <div class="sub" id="fin">готово в --:--</div>
-      <div class="wht" id="en">залить 13.2 кВт·ч</div>
-      <div class="cost" id="cst">≈ 73 ₽</div>
+      <div class="sub" id="fin">готово в 06:32</div>
+      <div class="wht" id="en">15.4 кВт·ч</div>
+      <div class="cost" id="cst">≈ 76 ₽</div>
     </div>
   </div>
 
   <div class="card">
     <div class="row">
       <span class="sub">Ёмкость батареи</span>
-      <span class="val"><span id="bv">40</span><span class="pct"> кВт·ч</span></span>
+      <span class="val"><span id="bv">44</span><span class="pct"> кВт·ч</span></span>
     </div>
-    <input type="range" id="bs" min="10" max="150" value="40">
+    <input type="range" id="bs" min="10" max="150" value="44">
   </div>
 
   <div class="card">
     <div class="row">
-      <div><div class="sub">Текущий заряд</div><div class="val"><span id="sv">62</span><span class="pct">%</span></div></div>
+      <div><div class="sub">Текущий заряд</div><div class="val"><span id="sv">60</span><span class="pct">%</span></div></div>
       <div style="text-align:right"><div class="sub">Зарядить до</div><div class="val"><span id="ev">95</span><span class="pct">%</span></div></div>
     </div>
     <div class="dual">
       <div class="trk"></div><div class="rng" id="rng"></div>
-      <input type="range" id="ss" min="0" max="100" value="62">
+      <input type="range" id="ss" min="0" max="100" value="60">
       <input type="range" id="es" min="0" max="100" value="95">
     </div>
   </div>
@@ -101,17 +95,13 @@ input[type=range]::-moz-range-thumb{height:24px;width:24px;border-radius:50%;bac
       </div>
       <div>
         <div class="sub" style="margin-bottom:6px">Тариф</div>
-        <div class="pbox"><input type="number" id="ti" value="5.5" step="0.1" inputmode="decimal"><span class="sub">₽</span></div>
+        <div class="pbox"><input type="number" id="ti" value="4.92" step="0.01" inputmode="decimal"><span class="sub">₽</span></div>
       </div>
     </div>
     <div class="prs">
       <button onclick="sp(1.1)">1.1 кВт</button><button onclick="sp(1.4)">1.4 кВт</button><button onclick="sp(1.8)">1.8 кВт</button>
       <button onclick="sp(2.4)">2.4 кВт</button><button onclick="sp(3.0)">3.0 кВт</button><button onclick="sp(3.5)">3.5 кВт</button>
     </div>
-  </div>
-
-  <div class="acts">
-    <button class="btn-main" id="tb" onclick="tt()">Запустить таймер</button>
   </div>
 </div>
 <script>
@@ -129,48 +119,27 @@ const $=id=>document.getElementById(id);
 if('serviceWorker' in navigator){
   navigator.serviceWorker.register('./sw.js').catch(()=>{});
 }
-let baseSec=0,endTs=0,iv=null,run=0;
 function calc(){
-  if(run)stop();
   let c=+$('bs').value,s=+$('ss').value,e=+$('es').value,p=+$('pi').value||0,tr=+$('ti').value||0;
   if(s>e){s=e;$('ss').value=s}
   $('bv').textContent=c;$('sv').textContent=s;$('ev').textContent=e;
   $('rng').style.left=s+'%';$('rng').style.width=(e-s)+'%';
   let k=c*((e-s)/100);
-  $('en').textContent='залить '+k.toFixed(1)+' кВт·ч';
+  $('en').textContent=k.toFixed(1)+' кВт·ч';
   $('cst').textContent=(tr>0&&k>0)?('≈ '+Math.round(k*tr)+' ₽'):'';
   if(p>0&&k>0){
-    baseSec=Math.round((k/p)*3600);draw(baseSec);
-    let d=new Date(Date.now()+baseSec*1000);
+    let totalMin=Math.round((k/p)*60);
+    let h=Math.floor(totalMin/60),m=totalMin%60;
+    $('td').textContent=(h<10?'0'+h:h)+':'+(m<10?'0'+m:m);
+    let d=new Date(Date.now()+totalMin*60000);
     $('fin').textContent='готово в '+String(d.getHours()).padStart(2,'0')+':'+String(d.getMinutes()).padStart(2,'0');
-  }else{baseSec=0;draw(0);$('fin').textContent='зарядка не нужна'}
+  }else{
+    $('td').textContent='00:00';
+    $('fin').textContent='зарядка не нужна';
+  }
   localStorage.setItem('ev',JSON.stringify({c,s,e,p,tr}));
 }
-function draw(t){
-  let h=Math.floor(t/3600),m=Math.floor(t%3600/60),s=t%60;
-  $('td').textContent=(h<10?'0'+h:h)+':'+(m<10?'0'+m:m);
-  $('secTxt').firstChild.textContent=(s<10?'0'+s:s)+' сек ';
-}
 function sp(v){$('pi').value=v;calc()}
-function tick(){
-  let rem=Math.max(0,Math.round((endTs-Date.now())/1000));
-  draw(rem);
-  if(rem<=0){stop();alert('Зарядка завершена!')}
-}
-function tt(){
-  if(run)return stop();
-  if(baseSec<=0)return;
-  run=1;endTs=Date.now()+baseSec*1000;
-  $('tb').textContent='Остановить таймер';$('tb').classList.add('run');
-  $('stTxt').textContent='Таймер запущен';$('stDot').classList.add('run');
-  iv=setInterval(tick,1000);
-}
-function stop(){
-  run=0;clearInterval(iv);
-  $('tb').textContent='Запустить таймер';$('tb').classList.remove('run');
-  $('stTxt').textContent='Расчёт заряда';$('stDot').classList.remove('run');
-}
-function rt(){stop();calc()}
 ['bs','ss','es','pi','ti'].forEach(id=>$(id).addEventListener('input',calc));
 let saved=JSON.parse(localStorage.getItem('ev')||'null');
 if(saved){$('bs').value=saved.c;$('ss').value=saved.s;$('es').value=saved.e;$('pi').value=saved.p;if(saved.tr!==undefined)$('ti').value=saved.tr}
