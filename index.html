@@ -137,7 +137,7 @@ function tiltCol(col){
       items[i].style.transform='rotateX('+ang+'deg) scale('+sc+')';
       items[i].style.opacity=op;
     }else{items[i].style.opacity=0.15}
-    items[i].classList.toggle('act',i===act);
+    items[i].classList.toggle('act',i===idx);
   }
 }
 function onWhlScroll(col){
@@ -165,7 +165,8 @@ function calc(){
     var totalMin=Math.round((k/curP)*60),h=Math.floor(totalMin/60),m=totalMin%60;
     $('td').textContent=(10>h?'0'+h:h)+':'+(10>m?'0'+m:m);
     if(gt){
-      var parts=gt.split(':'),startMin=(+parts*60+ +parts-totalMin)%1440;
+      var gh=parseInt(gt.slice(0,2),10),gm=parseInt(gt.slice(3,5),10);
+      var startMin=(gh*60+gm-totalMin)%1440;
       if(0>startMin)startMin+=1440;
       $('fin').className='start-badge';$('fin').textContent='старт в '+String(Math.floor(startMin/60)).padStart(2,'0')+':'+String(startMin%60).padStart(2,'0');
     }else{
