@@ -42,68 +42,54 @@ input[type=range]::-moz-range-thumb{height:24px;width:24px;border-radius:50%;bac
 .dual input::-webkit-slider-thumb{pointer-events:auto;position:relative;z-index:4}
 .dual input::-moz-range-thumb{pointer-events:auto;position:relative;z-index:4}
 .inputs-grid{display:grid;grid-template-columns:1fr 1fr 1.15fr;gap:8px}
-.pbox{background:#14161a;border-radius:12px;padding:10px 10px;display:flex;justify-content:space-between;align-items:center;border:1px solid #282c34;height:44px}
-.pbox select,.pbox input{background:transparent;border:none;color:#fff;font-size:17px;font-weight:600;width:100%;outline:none;color-scheme:dark;-webkit-appearance:none;appearance:none}
-.pbox input[type=time]{font-size:16px;padding:0}
+.pbox{background:#14161a;border-radius:12px;padding:10px;display:flex;justify-content:space-between;align-items:center;border:1px solid #282c34;height:44px;cursor:pointer}
+.pbox-val{color:#fff;font-size:17px;font-weight:600}
+.pbox input[type=time]{background:transparent;border:none;color:#fff;font-size:16px;font-weight:600;width:100%;outline:none;color-scheme:dark;padding:0}
 .clr{background:none;border:none;color:#8b929e;font-size:15px;padding-left:4px;cursor:pointer}
 .prs{display:grid;grid-template-columns:repeat(3,1fr);gap:8px}
 .prs button{background:#252930;border:none;color:#d1d5db;padding:10px 6px;border-radius:10px;font-size:13px;font-weight:500;cursor:pointer}
 .prs button:active{background:#e2e8f0;color:#111317}
+.ovl{position:fixed;inset:0;background:rgba(0,0,0,.6);opacity:0;pointer-events:none;transition:opacity .25s;z-index:50;display:flex;align-items:flex-end;justify-content:center}
+.ovl.open{opacity:1;pointer-events:auto}
+.sht{width:100%;max-width:420px;background:#1c1f24;border-radius:20px 20px 0 0;padding:12px 16px calc(env(safe-area-inset-bottom,16px) + 12px);transform:translateY(100%);transition:transform .28s cubic-bezier(.2,.8,.2,1);border-top:1px solid rgba(255,255,255,.08)}
+.ovl.open .sht{transform:translateY(0)}
+.sht-hdr{display:flex;justify-content:space-between;align-items:center;padding-bottom:10px;border-bottom:1px solid #282c34;margin-bottom:8px}
+.sht-ttl{font-size:15px;font-weight:600;color:#e5e7eb}
+.sht-btn{background:none;border:none;color:#34d399;font-size:16px;font-weight:600;cursor:pointer;padding:4px 8px}
+.whl-wrap{position:relative;height:180px;display:flex;justify-content:center;align-items:center;overflow:hidden;mask-image:linear-gradient(to bottom,transparent,#000 28%,#000 72%,transparent);-webkit-mask-image:linear-gradient(to bottom,transparent,#000 28%,#000 72%,transparent)}
+.whl-bar{position:absolute;left:12px;right:12px;height:36px;background:rgba(255,255,255,.07);border-radius:10px;pointer-events:none}
+.whl-col{height:180px;width:90px;overflow-y:scroll;scroll-snap-type:y mandatory;scrollbar-width:none;text-align:center}
+.whl-col::-webkit-scrollbar{display:none}
+.whl-pad{height:72px}
+.whl-itm{height:36px;line-height:36px;scroll-snap-align:center;font-size:21px;font-weight:500;color:#9ca3af;font-variant-numeric:tabular-nums;transition:color .15s}
+.whl-itm.act{color:#fff;font-weight:600}
+.whl-sep{font-size:22px;font-weight:700;color:#fff;padding:0 2px;margin-bottom:2px}
+.whl-unit{font-size:16px;color:#8b929e;margin-left:8px}
 </style>
 </head>
 <body>
 <div class="app">
-  <header>
-    <h1>EV Calc</h1>
-    <div class="st"><span class="dot"></span><span>Расчёт заряда</span></div>
-  </header>
-
+  <header><h1>EV Calc</h1><div class="st"><span class="dot"></span><span>Расчёт заряда</span></div></header>
   <div class="card top-card">
-    <div>
-      <div class="tmr" id="td">11:19</div>
-      <div class="sub" style="margin-top:6px">время заряда</div>
-    </div>
-    <div class="meta">
-      <div class="sub" id="fin">готово в 06:32</div>
-      <div class="wht" id="en">15.8 кВт·ч</div>
-      <div class="cost" id="cst">≈ 78 ₽</div>
-    </div>
+    <div><div class="tmr" id="td">11:19</div><div class="sub" style="margin-top:6px">время заряда</div></div>
+    <div class="meta"><div class="sub" id="fin">готово в 06:32</div><div class="wht" id="en">15.8 кВт·ч</div><div class="cost" id="cst">≈ 78 ₽</div></div>
   </div>
-
   <div class="card">
-    <div class="row">
-      <span class="sub">Ёмкость батареи</span>
-      <span class="val"><span id="bv">44</span><span class="pct"> кВт·ч</span></span>
-    </div>
+    <div class="row"><span class="sub">Ёмкость батареи</span><span class="val"><span id="bv">44</span><span class="pct"> кВт·ч</span></span></div>
     <input type="range" id="bs" min="10" max="150" value="44">
   </div>
-
   <div class="card">
     <div class="row">
       <div><div class="sub">Текущий заряд</div><div class="val"><span id="sv">59</span><span class="pct">%</span></div></div>
       <div style="text-align:right"><div class="sub">Зарядить до</div><div class="val"><span id="ev">95</span><span class="pct">%</span></div></div>
     </div>
-    <div class="dual">
-      <div class="trk"></div><div class="rng" id="rng"></div>
-      <input type="range" id="ss" min="0" max="100" value="59">
-      <input type="range" id="es" min="0" max="100" value="95">
-    </div>
+    <div class="dual"><div class="trk"></div><div class="rng" id="rng"></div><input type="range" id="ss" min="0" max="100" value="59"><input type="range" id="es" min="0" max="100" value="95"></div>
   </div>
-
   <div class="card">
     <div class="inputs-grid">
-      <div>
-        <div class="sub" style="margin-bottom:6px">Мощность</div>
-        <div class="pbox"><select id="pi"></select><span class="sub">кВт</span></div>
-      </div>
-      <div>
-        <div class="sub" style="margin-bottom:6px">Тариф</div>
-        <div class="pbox"><select id="ti"></select><span class="sub">₽</span></div>
-      </div>
-      <div>
-        <div class="sub" style="margin-bottom:6px">Готово к</div>
-        <div class="pbox"><input type="time" id="gt" value=""><button class="clr" id="cb" onclick="ct()" style="display:none">✕</button></div>
-      </div>
+      <div><div class="sub" style="margin-bottom:6px">Мощность</div><div class="pbox" onclick="openWhl('p')"><span class="pbox-val" id="pv">1,4</span><span class="sub">кВт</span></div></div>
+      <div><div class="sub" style="margin-bottom:6px">Тариф</div><div class="pbox" onclick="openWhl('t')"><span class="pbox-val" id="tv">4,92</span><span class="sub">₽</span></div></div>
+      <div><div class="sub" style="margin-bottom:6px">Готово к</div><div class="pbox"><input type="time" id="gt" value=""><button class="clr" id="cb" onclick="ct()" style="display:none">✕</button></div></div>
     </div>
     <div class="prs">
       <button onclick="sp(1.1)">1.1 кВт</button><button onclick="sp(1.4)">1.4 кВт</button><button onclick="sp(1.8)">1.8 кВт</button>
@@ -111,81 +97,80 @@ input[type=range]::-moz-range-thumb{height:24px;width:24px;border-radius:50%;bac
     </div>
   </div>
 </div>
+<div class="ovl" id="ovl" onclick="if(event.target===this)closeWhl()">
+  <div class="sht">
+    <div class="sht-hdr"><span class="sht-ttl" id="wTtl">Мощность</span><button class="sht-btn" onclick="closeWhl()">Готово</button></div>
+    <div class="whl-wrap"><div class="whl-bar"></div><div class="whl-col" id="wCol1"></div><div class="whl-sep">,</div><div class="whl-col" id="wCol2"></div><div class="whl-unit" id="wUnit">кВт</div></div>
+  </div>
+</div>
 <script>
-const $=id=>document.getElementById(id);
-(function makeIcon(){
-  let cv=document.createElement('canvas');cv.width=cv.height=180;
-  let cx=cv.getContext('2d');
-  cx.fillStyle='#1c1f24';cx.fillRect(0,0,180,180);
-  cx.strokeStyle='#34d399';cx.lineWidth=6;cx.beginPath();cx.arc(90,90,62,0,Math.PI*2);cx.stroke();
-  cx.fillStyle='#34d399';cx.beginPath();
-  cx.moveTo(98,46);cx.lineTo(64,96);cx.lineTo(88,96);cx.lineTo(82,134);cx.lineTo(116,84);cx.lineTo(92,84);
-  cx.closePath();cx.fill();
-  $('appIcon').href=cv.toDataURL('image/png');
-})();
-if('serviceWorker' in navigator){
-  navigator.serviceWorker.register('./sw.js').catch(()=>{});
+function $(id){return document.getElementById(id)}
+(function(){var cv=document.createElement('canvas');cv.width=cv.height=180;var cx=cv.getContext('2d');cx.fillStyle='#1c1f24';cx.fillRect(0,0,180,180);cx.strokeStyle='#34d399';cx.lineWidth=6;cx.beginPath();cx.arc(90,90,62,0,Math.PI*2);cx.stroke();cx.fillStyle='#34d399';cx.beginPath();cx.moveTo(98,46);cx.lineTo(64,96);cx.lineTo(88,96);cx.lineTo(82,134);cx.lineTo(116,84);cx.lineTo(92,84);cx.closePath();cx.fill();$('appIcon').href=cv.toDataURL('image/png')})();
+if('serviceWorker' in navigator)navigator.serviceWorker.register('./sw.js').catch(function(){});
+var curP=1.4,curT=4.92,wMode=null,sTimer=null;
+function buildCol(el,max,pad2){
+  var h='<div class="whl-pad"></div>';
+  for(var i=0;i<=max;i++)h+='<div class="whl-itm">'+(pad2&&i<10?'0'+i:i)+'</div>';
+  el.innerHTML=h+'<div class="whl-pad"></div>';
 }
-function fillSelects(curP,curT){
-  let pArr=[];
-  for(let v=10;v<=220;v++)pArr.push(+(v/10).toFixed(1));
-  if(curP&&!pArr.includes(+curP))pArr.push(+curP);
-  pArr.sort((a,b)=>a-b);
-  $('pi').innerHTML=pArr.map(v=>`<option value="${v}">${v.toFixed(1).replace('.',',')}</option>`).join('');
-
-  let tArr=[0];
-  for(let v=100;v<=1500;v+=5)tArr.push(+(v/100).toFixed(2));
-  if(curT!==undefined&&!tArr.includes(+curT))tArr.push(+curT);
-  tArr.sort((a,b)=>a-b);
-  $('ti').innerHTML=tArr.map(v=>`<option value="${v}">${v===0?'0':v.toFixed(2).replace('.',',')}</option>`).join('');
+function openWhl(mode){
+  wMode=mode;var c1=$('wCol1'),c2=$('wCol2');
+  if(mode==='p'){
+    $('wTtl').textContent='Мощность зарядки';$('wUnit').textContent='кВт';
+    buildCol(c1,22,false);buildCol(c2,9,false);
+    var i1=Math.floor(curP),i2=Math.round((curP-i1)*10);setScroll(c1,i1);setScroll(c2,i2);
+  }else{
+    $('wTtl').textContent='Тариф за кВт·ч';$('wUnit').textContent='₽';
+    buildCol(c1,20,false);buildCol(c2,99,true);
+    var i1=Math.floor(curT),i2=Math.round((curT-i1)*100);setScroll(c1,i1);setScroll(c2,i2);
+  }
+  $('ovl').classList.add('open');
 }
+function setScroll(col,idx){col.scrollTop=idx*36;hiCol(col,idx)}
+function hiCol(col,idx){
+  var items=col.querySelectorAll('.whl-itm');
+  for(var i=0;i<items.length;i++)items[i].classList.toggle('act',i===idx);
+}
+function onWhlScroll(col){
+  var idx=Math.round(col.scrollTop/36);hiCol(col,idx);clearTimeout(sTimer);
+  sTimer=setTimeout(function(){
+    var i1=Math.round($('wCol1').scrollTop/36),i2=Math.round($('wCol2').scrollTop/36);
+    if(wMode==='p'){curP=+(i1+i2/10).toFixed(1);if(curP<0.1)curP=0.1}
+    else if(wMode==='t'){curT=+(i1+i2/100).toFixed(2)}
+    calc();
+  },60);
+}
+$('wCol1').addEventListener('scroll',function(){onWhlScroll(this)});
+$('wCol2').addEventListener('scroll',function(){onWhlScroll(this)});
+function closeWhl(){$('ovl').classList.remove('open');wMode=null}
 function calc(){
-  let c=+$('bs').value,s=+$('ss').value,e=+$('es').value,p=+$('pi').value||0,tr=+$('ti').value||0,gt=$('gt').value;
+  var c=+$('bs').value,s=+$('ss').value,e=+$('es').value,gt=$('gt').value;
+  $('pv').textContent=curP.toFixed(1).replace('.',',');$('tv').textContent=curT.toFixed(2).replace('.',',');
   $('cb').style.display=gt?'block':'none';
   if(s>e){s=e;$('ss').value=s}
   $('bv').textContent=c;$('sv').textContent=s;$('ev').textContent=e;
   $('rng').style.left=s+'%';$('rng').style.width=(e-s)+'%';
-  let k=c*((e-s)/100);
-  $('en').textContent=k.toFixed(1)+' кВт·ч';
-  $('cst').textContent=(tr>0&&k>0)?('≈ '+Math.round(k*tr)+' ₽'):'';
-  if(p>0&&k>0){
-    let totalMin=Math.round((k/p)*60);
-    let h=Math.floor(totalMin/60),m=totalMin%60;
+  var k=c*((e-s)/100);$('en').textContent=k.toFixed(1)+' кВт·ч';
+  $('cst').textContent=(curT>0&&k>0)?('≈ '+Math.round(k*curT)+' ₽'):'';
+  if(curP>0&&k>0){
+    var totalMin=Math.round((k/curP)*60),h=Math.floor(totalMin/60),m=totalMin%60;
     $('td').textContent=(h<10?'0'+h:h)+':'+(m<10?'0'+m:m);
     if(gt){
-      let [gh,gm]=gt.split(':').map(Number);
-      let targetMin=gh*60+gm;
-      let startMin=(targetMin-totalMin)%1440;
+      var parts=gt.split(':'),startMin=(+parts[0]*60+ +parts[1]-totalMin)%1440;
       if(startMin<0)startMin+=1440;
-      let sh=Math.floor(startMin/60),sm=startMin%60;
-      $('fin').className='start-badge';
-      $('fin').textContent='старт в '+String(sh).padStart(2,'0')+':'+String(sm).padStart(2,'0');
+      $('fin').className='start-badge';$('fin').textContent='старт в '+String(Math.floor(startMin/60)).padStart(2,'0')+':'+String(startMin%60).padStart(2,'0');
     }else{
-      let d=new Date(Date.now()+totalMin*60000);
-      $('fin').className='sub';
-      $('fin').textContent='готово в '+String(d.getHours()).padStart(2,'0')+':'+String(d.getMinutes()).padStart(2,'0');
+      var d=new Date(Date.now()+totalMin*60000);
+      $('fin').className='sub';$('fin').textContent='готово в '+String(d.getHours()).padStart(2,'0')+':'+String(d.getMinutes()).padStart(2,'0');
     }
-  }else{
-    $('td').textContent='00:00';
-    $('fin').className='sub';
-    $('fin').textContent='зарядка не нужна';
-  }
-  localStorage.setItem('ev',JSON.stringify({c,s,e,p,tr,gt}));
+  }else{$('td').textContent='00:00';$('fin').className='sub';$('fin').textContent='зарядка не нужна'}
+  localStorage.setItem('ev',JSON.stringify({c:c,s:s,e:e,p:curP,tr:curT,gt:gt}));
 }
-function sp(v){$('pi').value=v;calc()}
+function sp(v){curP=v;calc()}
 function ct(){$('gt').value='';calc()}
-['bs','ss','es','pi','ti','gt'].forEach(id=>$(id).addEventListener('change',calc));
-['bs','ss','es','gt'].forEach(id=>$(id).addEventListener('input',calc));
-let saved=JSON.parse(localStorage.getItem('ev')||'null');
-let initP=saved&&saved.p?saved.p:1.4;
-let initT=saved&&saved.tr!==undefined?saved.tr:4.92;
-fillSelects(initP,initT);
-if(saved){
-  $('bs').value=saved.c;$('ss').value=saved.s;$('es').value=saved.e;
-  if(saved.gt)$('gt').value=saved.gt;
-}
-$('pi').value=initP;
-$('ti').value=initT;
+['bs','ss','es','gt'].forEach(function(id){$(id).addEventListener('input',calc)});
+var saved=JSON.parse(localStorage.getItem('ev')||'null');
+if(saved){$('bs').value=saved.c;$('ss').value=saved.s;$('es').value=saved.e;if(saved.p)curP=+saved.p;if(saved.tr!==undefined)curT=+saved.tr;if(saved.gt)$('gt').value=saved.gt}
 calc();
 </script>
 </body>
