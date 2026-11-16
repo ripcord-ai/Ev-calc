@@ -43,9 +43,9 @@ input[type=range]::-moz-range-thumb{height:24px;width:24px;border-radius:50%;bac
 .dual input::-moz-range-thumb{pointer-events:auto;position:relative;z-index:4}
 .inputs-grid{display:grid;grid-template-columns:1fr 1fr 1.15fr;gap:8px}
 .pbox{background:#14161a;border-radius:12px;padding:10px;display:flex;justify-content:space-between;align-items:center;border:1px solid #282c34;height:44px;cursor:pointer}
-.pbox-val{color:#fff;font-size:17px;font-weight:600}
-.pbox input[type=time]{background:transparent;border:none;color:#fff;font-size:16px;font-weight:600;width:100%;outline:none;color-scheme:dark;padding:0}
-.clr{background:none;border:none;color:#8b929e;font-size:15px;padding-left:4px;cursor:pointer}
+.pbox-val{color:#fff;font-size:17px;font-weight:600;font-variant-numeric:tabular-nums}
+.pbox-val.empty{color:#8b929e;font-weight:500}
+.clr{background:none;border:none;color:#8b929e;font-size:15px;padding:2px 0 2px 6px;cursor:pointer}
 .prs{display:grid;grid-template-columns:repeat(3,1fr);gap:8px}
 .prs button{background:#252930;border:none;color:#d1d5db;padding:10px 6px;border-radius:10px;font-size:13px;font-weight:500;cursor:pointer}
 .prs button:active{background:#e2e8f0;color:#111317}
@@ -89,7 +89,7 @@ input[type=range]::-moz-range-thumb{height:24px;width:24px;border-radius:50%;bac
     <div class="inputs-grid">
       <div><div class="sub" style="margin-bottom:6px">Мощность</div><div class="pbox" onclick="openWhl('p')"><span class="pbox-val" id="pv">1,4</span><span class="sub">кВт</span></div></div>
       <div><div class="sub" style="margin-bottom:6px">Тариф</div><div class="pbox" onclick="openWhl('t')"><span class="pbox-val" id="tv">4,92</span><span class="sub">₽</span></div></div>
-      <div><div class="sub" style="margin-bottom:6px">Готово к</div><div class="pbox"><input type="time" id="gt" value=""><button class="clr" id="cb" onclick="ct()" style="display:none">✕</button></div></div>
+      <div><div class="sub" style="margin-bottom:6px">Готово к</div><div class="pbox" onclick="openWhl('g')"><span class="pbox-val empty" id="gv">--:--</span><button class="clr" id="cb" onclick="ct(event)" style="display:none">✕</button></div></div>
     </div>
     <div class="prs">
       <button onclick="sp(1.1)">1.1 кВт</button><button onclick="sp(1.4)">1.4 кВт</button><button onclick="sp(1.8)">1.8 кВт</button>
@@ -100,14 +100,14 @@ input[type=range]::-moz-range-thumb{height:24px;width:24px;border-radius:50%;bac
 <div class="ovl" id="ovl" onclick="if(event.target===this)closeWhl()">
   <div class="sht">
     <div class="sht-hdr"><span class="sht-ttl" id="wTtl">Мощность</span><button class="sht-btn" onclick="closeWhl()">Готово</button></div>
-    <div class="whl-wrap"><div class="whl-bar"></div><div class="whl-col" id="wCol1"></div><div class="whl-sep">,</div><div class="whl-col" id="wCol2"></div><div class="whl-unit" id="wUnit">кВт</div></div>
+    <div class="whl-wrap"><div class="whl-bar"></div><div class="whl-col" id="wCol1"></div><div class="whl-sep" id="wSep">,</div><div class="whl-col" id="wCol2"></div><div class="whl-unit" id="wUnit">кВт</div></div>
   </div>
 </div>
 <script>
 function $(id){return document.getElementById(id)}
 (function(){var cv=document.createElement('canvas');cv.width=cv.height=180;var cx=cv.getContext('2d');cx.fillStyle='#1c1f24';cx.fillRect(0,0,180,180);cx.strokeStyle='#34d399';cx.lineWidth=6;cx.beginPath();cx.arc(90,90,62,0,Math.PI*2);cx.stroke();cx.fillStyle='#34d399';cx.beginPath();cx.moveTo(98,46);cx.lineTo(64,96);cx.lineTo(88,96);cx.lineTo(82,134);cx.lineTo(116,84);cx.lineTo(92,84);cx.closePath();cx.fill();$('appIcon').href=cv.toDataURL('image/png')})();
 if('serviceWorker' in navigator)navigator.serviceWorker.register('./sw.js').catch(function(){});
-var curP=1.4,curT=4.92,wMode=null,sTimer=null;
+var curP=1.4,curT=4.92,curG='',wMode=null,sTimer=null;
 function buildCol(el,max,pad2){
   var h='<div class="whl-pad"></div>';
   for(var i=0;i!==max+1;i++)h+='<div class="whl-itm" onclick="tapItm(this,'+i+')">'+(pad2&&10>i?'0'+i:i)+'</div>';
@@ -117,15 +117,21 @@ function tapItm(el,idx){el.parentElement.scrollTo({top:idx*36,behavior:'smooth'}
 function openWhl(mode){
   wMode=mode;var c1=$('wCol1'),c2=$('wCol2');
   if(mode==='p'){
-    $('wTtl').textContent='Мощность зарядки';$('wUnit').textContent='кВт';
+    $('wTtl').textContent='Мощность зарядки';$('wSep').textContent=',';$('wUnit').textContent='кВт';$('wUnit').style.display='';
     buildCol(c1,22,false);buildCol(c2,9,false);
     var i1=Math.floor(curP),i2=Math.round((curP-i1)*10);
     $('ovl').classList.add('open');setScroll(c1,i1);setScroll(c2,i2);
-  }else{
-    $('wTtl').textContent='Тариф за кВт·ч';$('wUnit').textContent='₽';
+  }else if(mode==='t'){
+    $('wTtl').textContent='Тариф за кВт·ч';$('wSep').textContent=',';$('wUnit').textContent='₽';$('wUnit').style.display='';
     buildCol(c1,20,false);buildCol(c2,99,true);
     var i1=Math.floor(curT),i2=Math.round((curT-i1)*100);
     $('ovl').classList.add('open');setScroll(c1,i1);setScroll(c2,i2);
+  }else{
+    $('wTtl').textContent='Готово к';$('wSep').textContent=':';$('wUnit').style.display='none';
+    buildCol(c1,23,true);buildCol(c2,59,true);
+    var gh=curG?parseInt(curG.slice(0,2),10):9,gm=curG?parseInt(curG.slice(3,5),10):0;
+    if(!curG){curG='09:00';calc()}
+    $('ovl').classList.add('open');setScroll(c1,gh);setScroll(c2,gm);
   }
 }
 function setScroll(col,idx){col.scrollTop=idx*36;tiltCol(col)}
@@ -147,6 +153,7 @@ function onWhlScroll(col){
     var i1=Math.round($('wCol1').scrollTop/36),i2=Math.round($('wCol2').scrollTop/36);
     if(wMode==='p'){curP=+(i1+i2/10).toFixed(1);if(0.1>curP)curP=0.1}
     else if(wMode==='t'){curT=+(i1+i2/100).toFixed(2)}
+    else if(wMode==='g'){curG=(10>i1?'0'+i1:i1)+':'+(10>i2?'0'+i2:i2)}
     calc();
   },60);
 }
@@ -154,9 +161,10 @@ $('wCol1').addEventListener('scroll',function(){onWhlScroll(this)});
 $('wCol2').addEventListener('scroll',function(){onWhlScroll(this)});
 function closeWhl(){$('ovl').classList.remove('open');wMode=null}
 function calc(){
-  var c=+$('bs').value,s=+$('ss').value,e=+$('es').value,gt=$('gt').value;
+  var c=+$('bs').value,s=+$('ss').value,e=+$('es').value;
   $('pv').textContent=curP.toFixed(1).replace('.',',');$('tv').textContent=curT.toFixed(2).replace('.',',');
-  $('cb').style.display=gt?'block':'none';
+  $('gv').textContent=curG||'--:--';$('gv').className=curG?'pbox-val':'pbox-val empty';
+  $('cb').style.display=curG?'block':'none';
   if(s>e){s=e;$('ss').value=s}
   $('bv').textContent=c;$('sv').textContent=s;$('ev').textContent=e;
   $('rng').style.left=s+'%';$('rng').style.width=(e-s)+'%';
@@ -165,8 +173,8 @@ function calc(){
   if(curP>0&&k>0){
     var totalMin=Math.round((k/curP)*60),h=Math.floor(totalMin/60),m=totalMin%60;
     $('td').textContent=(10>h?'0'+h:h)+':'+(10>m?'0'+m:m);
-    if(gt){
-      var gh=parseInt(gt.slice(0,2),10),gm=parseInt(gt.slice(3,5),10);
+    if(curG){
+      var gh=parseInt(curG.slice(0,2),10),gm=parseInt(curG.slice(3,5),10);
       var startMin=(gh*60+gm-totalMin)%1440;
       if(0>startMin)startMin+=1440;
       $('fin').className='start-badge';$('fin').textContent='старт в '+String(Math.floor(startMin/60)).padStart(2,'0')+':'+String(startMin%60).padStart(2,'0');
@@ -175,13 +183,13 @@ function calc(){
       $('fin').className='sub';$('fin').textContent='готово в '+String(d.getHours()).padStart(2,'0')+':'+String(d.getMinutes()).padStart(2,'0');
     }
   }else{$('td').textContent='00:00';$('fin').className='sub';$('fin').textContent='зарядка не нужна'}
-  localStorage.setItem('ev',JSON.stringify({c:c,s:s,e:e,p:curP,tr:curT,gt:gt}));
+  localStorage.setItem('ev',JSON.stringify({c:c,s:s,e:e,p:curP,tr:curT,gt:curG}));
 }
 function sp(v){curP=v;calc()}
-function ct(){$('gt').value='';calc()}
-['bs','ss','es','gt'].forEach(function(id){$(id).addEventListener('input',calc)});
+function ct(ev){ev.stopPropagation();curG='';calc()}
+['bs','ss','es'].forEach(function(id){$(id).addEventListener('input',calc)});
 var saved=JSON.parse(localStorage.getItem('ev')||'null');
-if(saved){$('bs').value=saved.c;$('ss').value=saved.s;$('es').value=saved.e;if(saved.p)curP=+saved.p;if(saved.tr!==undefined)curT=+saved.tr;if(saved.gt)$('gt').value=saved.gt}
+if(saved){$('bs').value=saved.c;$('ss').value=saved.s;$('es').value=saved.e;if(saved.p)curP=+saved.p;if(saved.tr!==undefined)curT=+saved.tr;if(saved.gt)curG=saved.gt}
 calc();
 </script>
 </body>
