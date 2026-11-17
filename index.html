@@ -8,6 +8,7 @@
 <meta name="apple-mobile-web-app-title" content="EV Calc">
 <link rel="apple-touch-icon" href="./icon.png?v=1">
 <link rel="icon" type="image/png" href="./icon.png?v=1">
+<link rel="manifest" href="./manifest.json">
 <title>EV Calc</title>
 <style>
 *{box-sizing:border-box;margin:0;padding:0;font-family:-apple-system,BlinkMacSystemFont,"SF Pro Display",sans-serif;-webkit-tap-highlight-color:transparent}
@@ -106,7 +107,7 @@ input[type=range]::-moz-range-thumb{height:24px;width:24px;border-radius:50%;bac
 </div>
 <script>
 function $(id){return document.getElementById(id)}
-if('serviceWorker' in navigator)navigator.serviceWorker.register('./sw.js').catch(function(){});
+if('serviceWorker' in navigator && navigator.onLine)navigator.serviceWorker.register('./sw.js').catch(function(){});
 var curP=1.4,curT=4.92,curG='',wMode=null,sTimer=null;
 function buildCol(el,max,pad2){
   var h='<div class="whl-pad"></div>';
