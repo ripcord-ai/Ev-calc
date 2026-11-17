@@ -68,6 +68,7 @@ input[type=range]::-moz-range-thumb{height:24px;width:24px;border-radius:50%;bac
 </style>
 </head>
 <body>
+<body>
 <div class="app">
   <header><h1>EV Calc</h1><div class="st"><span class="dot"></span><span>Расчёт заряда</span></div></header>
   <div class="card top-card">
@@ -105,7 +106,7 @@ input[type=range]::-moz-range-thumb{height:24px;width:24px;border-radius:50%;bac
 </div>
 <script>
 function $(id){return document.getElementById(id)}
-(function(){var cv=document.createElement('canvas');cv.width=cv.height=180;var cx=cv.getContext('2d');cx.fillStyle='#1c1f24';cx.fillRect(0,0,180,180);cx.strokeStyle='#34d399';cx.lineWidth=6;cx.beginPath();cx.arc(90,90,62,0,Math.PI*2);cx.stroke();cx.fillStyle='#34d399';cx.beginPath();cx.moveTo(98,46);cx.lineTo(64,96);cx.lineTo(88,96);cx.lineTo(82,134);cx.lineTo(116,84);cx.lineTo(92,84);cx.closePath();cx.fill();$('appIcon').href=cv.toDataURL('image/png')})();
+(function(){var cv=document.createElement('canvas');cv.width=cv.height=180;var cx=cv.getContext('2d');cx.fillStyle='#1c1f24';cx.fillRect(0,0,180,180);cx.strokeStyle='#34d399';cx.lineWidth=6;cx.beginPath();cx.arc(90,90,62,0,Math.PI*2);cx.stroke();cx.fillStyle='#34d399';cx.beginPath();cx.moveTo(98,46);cx.lineTo(64,96);cx.lineTo(88,96);cx.lineTo(82,134);cx.lineTo(116,84);cx.lineTo(92,84);cx.closePath();cx.fill();var u=cv.toDataURL('image/png');$('appIcon').href=u;if($('favIcon'))$('favIcon').href=u})();
 if('serviceWorker' in navigator)navigator.serviceWorker.register('./sw.js').catch(function(){});
 var curP=1.4,curT=4.92,curG='',wMode=null,sTimer=null;
 function buildCol(el,max,pad2){
