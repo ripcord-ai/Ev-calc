@@ -17,8 +17,8 @@ h1{font-size:24px;font-weight:700;letter-spacing:-0.3px}
 .st{display:flex;align-items:center;gap:6px;font-size:13px;font-weight:500;color:#d1d5db}
 .dot{width:8px;height:8px;border-radius:50%;background:#34d399}
 .card{background:#1c1f24;border-radius:16px;padding:16px 18px;border:1px solid rgba(255,255,255,.04);display:flex;flex-direction:column;gap:12px}
-.top-card{flex-direction:row;align-items:center;justify-content:space-between;padding:20px}
-.tmr{font-size:48px;font-weight:500;color:#34d399;letter-spacing:-1px;font-variant-numeric:tabular-nums;line-height:1}
+.top-card{flex-direction:row;align-items:center;justify-content:space-between;gap:12px;padding:20px}
+.tmr{font-size:46px;font-weight:500;color:#34d399;letter-spacing:-1px;font-variant-numeric:tabular-nums;line-height:1}
 .meta{display:flex;flex-direction:column;gap:5px;text-align:right;white-space:nowrap}
 .sub{font-size:13px;color:#8b929e}
 .wht{font-size:15px;color:#e5e7eb;font-weight:500}
@@ -166,10 +166,11 @@ function calc(){
   $('gv').textContent=curG||'--:--';$('gv').className=curG?'pbox-val':'pbox-val empty';
   $('cb').style.display=curG?'block':'none';
   if(s>e){s=e;$('ss').value=s}
+  $('ss').style.zIndex=(s===e&&s>0)?5:3;
   $('bv').textContent=c;$('sv').textContent=s;$('ev').textContent=e;
   $('rng').style.left=s+'%';$('rng').style.width=(e-s)+'%';
   var k=c*((e-s)/100);$('en').textContent=k.toFixed(1)+' кВт·ч';
-  $('cst').textContent=(curT>0&&k>0)?('≈ '+Math.round(k*curT)+' ₽'):'';
+  $('cst').textContent=curT>0?('≈ '+Math.round(k*curT)+' ₽'):'';
   if(curP>0&&k>0){
     var totalMin=Math.round((k/curP)*60),h=Math.floor(totalMin/60),m=totalMin%60;
     $('td').textContent=(10>h?'0'+h:h)+':'+(10>m?'0'+m:m);
