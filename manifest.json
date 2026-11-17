@@ -1,0 +1,15 @@
+{
+  "name": "EV Calc",
+  "short_name": "EV Calc",
+  "start_url": "./index.html",
+  "display": "standalone",
+  "background_color": "#111317",
+  "theme_color": "#111317",
+  "icons": [
+    {
+      "src": "./icon.png?v=1",
+      "sizes": "180x180",
+      "type": "image/png"
+    }
+  ]
+}
